@@ -30,6 +30,10 @@ from demo.models import Demo
 class DemoSerializer(serializers.ModelSerializer):
     # ModelSerializer和Django中ModelForm功能相似
     # Serializer和Django中Form功能相似
+
+    # def create(self, validated_data):
+    #     return super(DemoSerializer, self).create(validated_data)
+
     class Meta:
         model = Demo
         fields = ('id', 'name', 'active')
