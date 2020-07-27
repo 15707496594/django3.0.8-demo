@@ -1,6 +1,5 @@
 /venv/
 /db.sqlite3
 /.idea/
-/demo/__pycache__/
-/july/__pycache__/
-/demo/migrations/
+__pycache__/
+migrations/
