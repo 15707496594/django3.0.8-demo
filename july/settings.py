@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'demo.apps.DemoConfig'
 ]
 
+# 额外配置
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -53,6 +54,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'july.urls'
 
+# 模板的配置
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -130,6 +132,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-
+# 使用时的前缀
 STATIC_URL = '/static/'
+# Static files实际对应的目录
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 

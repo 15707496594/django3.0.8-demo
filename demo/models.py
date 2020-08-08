@@ -20,3 +20,8 @@ class Demo(models.Model):
         #     ordering=['?order_date'] # 随机排序，？表示随机
         #     ordering=['-pub_date','author'] # 以pub_date为降序，在以author升序排列
         ordering = ('-created_time', )
+
+class SaleOrder(models.Model):
+
+    # 单号
+    name = models.CharField(max_length=20,)

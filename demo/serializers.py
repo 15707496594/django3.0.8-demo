@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from demo.models import Demo
+from demo import models
 
 
 # class DemoSerializer(serializers.Serializer):
@@ -35,5 +35,11 @@ class DemoSerializer(serializers.ModelSerializer):
     #     return super(DemoSerializer, self).create(validated_data)
 
     class Meta:
-        model = Demo
+        model = models.Demo
         fields = ('id', 'name', 'active')
+
+class SaleOrderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.SaleOrder
+        fields = ('id', 'name')
