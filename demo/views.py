@@ -1,13 +1,12 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.parsers import JSONParser
 from demo import models
 from demo import serializers
+from .utils.permissions import SaleOrderPermission
+from .utils.throttling import SaleOrderRateThrottle
+from rest_framework.throttling import UserRateThrottle
 
 
 # @csrf_exempt
@@ -94,8 +93,64 @@ from demo import serializers
 #         demo.delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class UserAuth(APIView):
+    throttle_classes = [UserRateThrottle, ]
+
+    def post(self, request, *args, **kwargs):
+        """
+        用户登录，生成token，返回给客户端
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        response = {'code': 200, 'message': None}
+        username = request._request.POST.get('username')
+        password = request._request.POST.get('password')
+        user = User.objects.filter(username=username).first()
+        if not user:
+            response['code'] = 403
+            response['message'] = '用户名或密码错误'
+            return Response(response, status=status.HTTP_403_FORBIDDEN)
+        if not user.check_password(password):
+            response['code'] = 403
+            response['message'] = '用户名或密码错误'
+            return Response(response, status=status.HTTP_403_FORBIDDEN)
+        if request.META.get('HTTP_X_FORWARDED_FOR'):
+            ip = request.META.get("HTTP_X_FORWARDED_FOR")
+        else:
+            ip = request.META.get("REMOTE_ADDR")
+        # 用户名密码校验通过，生成token
+        try:
+            token = self.generate_token(username)
+            models.UserToken.objects.update_or_create(defaults={'token': token}, user=user, address=ip)
+        except Exception as e:
+            response['code'] = 500
+            response['message'] = '生成token失败'
+            return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        response['message'] = '验证成功'
+        response['token'] = token
+        response['userinfo'] = {
+            'username': user.username,
+            'email': user.email
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
+    def generate_token(self, username):
+        import hashlib
+        import time
+
+        ctime = str(time.time())
+        token = hashlib.md5(bytes(username, encoding='utf-8'))
+        token.update(bytes(ctime, encoding='utf-8'))
+        return token.hexdigest()
+
 
 class SaleOrderView(APIView):
+
+    # authentication_classes = []
+    permission_classes = [SaleOrderPermission, ]
+    throttle_classes = [SaleOrderRateThrottle, ]
 
     def get(self, request, pk=None):
         if pk:

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Demo(models.Model):
@@ -20,6 +21,12 @@ class Demo(models.Model):
         #     ordering=['?order_date'] # 随机排序，？表示随机
         #     ordering=['-pub_date','author'] # 以pub_date为降序，在以author升序排列
         ordering = ('-created_time', )
+
+class UserToken(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=120)
+    # 生成token时客户端的ip地址
+    address = models.CharField(max_length=20)
 
 class SaleOrder(models.Model):
 
