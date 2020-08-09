@@ -116,27 +116,37 @@ class UserAuth(APIView):
             response['code'] = 403
             response['message'] = '用户名或密码错误'
             return Response(response, status=status.HTTP_403_FORBIDDEN)
-        if request.META.get('HTTP_X_FORWARDED_FOR'):
-            ip = request.META.get("HTTP_X_FORWARDED_FOR")
-        else:
-            ip = request.META.get("REMOTE_ADDR")
+        ip = self.get_client_ip(request)
         # 用户名密码校验通过，生成token
         try:
             token = self.generate_token(username)
-            models.UserToken.objects.update_or_create(defaults={'token': token}, user=user, address=ip)
+            token_obj = models.UserToken.objects.update_or_create(defaults={'token': token}, user=user, address=ip)[0]
         except Exception as e:
             response['code'] = 500
             response['message'] = '生成token失败'
             return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         response['message'] = '验证成功'
-        response['token'] = token
-        response['userinfo'] = {
-            'username': user.username,
-            'email': user.email
-        }
+        response['data'] = serializers.UserTokenSerializer(token_obj).data
         return Response(response, status=status.HTTP_200_OK)
 
+    def get_client_ip(self, request):
+        """
+        获取客户端ip
+        :param request:
+        :return:
+        """
+        if request.META.get('HTTP_X_FORWARDED_FOR'):
+            ip = request.META.get("HTTP_X_FORWARDED_FOR")
+        else:
+            ip = request.META.get("REMOTE_ADDR")
+        return ip
+
     def generate_token(self, username):
+        """
+        生成token字符串
+        :param username:
+        :return:
+        """
         import hashlib
         import time
 

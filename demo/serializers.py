@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from demo import models
+from django.contrib.auth.models import User
 
 
 # class DemoSerializer(serializers.Serializer):
@@ -43,3 +44,19 @@ class SaleOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.SaleOrder
         fields = ('id', 'name')
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email')
+
+
+class UserTokenSerializer(serializers.ModelSerializer):
+
+    user = UserSerializer()
+
+    class Meta:
+        model = models.UserToken
+        fields = ('token', 'address', 'user')
