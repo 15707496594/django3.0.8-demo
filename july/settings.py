@@ -29,7 +29,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
+# 这里应加入自己想要安装的模块，例如demo、rest_framework
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

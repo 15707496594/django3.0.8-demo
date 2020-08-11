@@ -32,3 +32,52 @@ class SaleOrder(models.Model):
 
     # 单号
     name = models.CharField(max_length=20,)
+
+
+class Person(models.Model):
+    """ 这个模型在Django中相当于执行了如下建表语句
+    CREATE TABLE myapp_person (
+        "id" serial NOT NULL PRIMARY KEY,
+        "first_name" varchar(30) NOT NULL,
+        "last_name" varchar(30) NOT NULL
+    );
+    # ==========================自定义表名================================
+    该表的名称 myapp_person 是自动从某些模型元数据中派生出来，但可以被改写
+    在类中的class Meta下增加db_table属性，例如：db_table = 'july_person'
+    # ==========================自动设置主键==============================
+    默认情况下， Django 会给每一个模型添加下面的字段：
+    id = models.AutoField(primary_key=True)
+    这是一个自增的主键。
+    如果你想自己指定主键， 在你想要设置为主键的字段上设置参数 primary_key=True。
+    如果 Django 看到你显式地设置了 Field.primary_key，将不会自动在表（模型）中添加 id 列。
+    每个模型都需要拥有一个设置了 primary_key=True 的字段（无论是显式的设置还是 Django 自动设置）。
+
+    """
+    SHIRT_SIZES = (
+        ('S', 'Small'),
+        ('M', 'Medium'),
+        ('L', 'Large')
+    )
+    person_id = models.AutoField(primary_key=True)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    shirt_sizes = models.CharField(max_length=1, choices=SHIRT_SIZES)
+
+
+    class Meta:
+        db_table = 'july_person'
+
+
+class Musician(models.Model):
+
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    instrument = models.CharField(max_length=100)
+
+
+class Album(models.Model):
+
+    artist = models.ForeignKey(Musician, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    release_date = models.DateField()
+    num_stars = models.IntegerField()
