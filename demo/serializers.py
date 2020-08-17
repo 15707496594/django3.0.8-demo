@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from demo.models import Demo
+from demo import models
+from django.contrib.auth.models import User
 
 
 # class DemoSerializer(serializers.Serializer):
@@ -35,5 +36,27 @@ class DemoSerializer(serializers.ModelSerializer):
     #     return super(DemoSerializer, self).create(validated_data)
 
     class Meta:
-        model = Demo
+        model = models.Demo
         fields = ('id', 'name', 'active')
+
+class SaleOrderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.SaleOrder
+        fields = ('id', 'name')
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email')
+
+
+class UserTokenSerializer(serializers.ModelSerializer):
+
+    user = UserSerializer()
+
+    class Meta:
+        model = models.UserToken
+        fields = ('token', 'address', 'user')

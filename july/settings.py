@@ -29,7 +29,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
+# 这里应加入自己想要安装的模块，例如demo、rest_framework
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,14 +38,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'demo.apps.DemoConfig'
+    'demo'
 ]
 
+# 额外配置
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -53,6 +54,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'july.urls'
 
+# 模板的配置
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -130,6 +132,22 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-
+# 使用时的前缀
 STATIC_URL = '/static/'
+# Static files实际对应的目录
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ['demo.utils.auths.JulyTokenAuthentication',],
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '3/m',
+        'sale_order': '60/m'
+    }
+}
+
+# celery配置
+CELERY_TIMEZONE = 'Asia/Shanghai'
+CELERY_BROKER_URL = 'amqp://root:admin@127.0.0.1:5672'
+CELERY_RESULT_BACKEND = 'redis://:admin@127.0.0.1:6379/0'
