@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.http.response import HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -7,6 +8,9 @@ from demo import serializers
 from .utils.permissions import SaleOrderPermission
 from .utils.throttling import SaleOrderRateThrottle
 from rest_framework.throttling import UserRateThrottle
+from demo.tasks import hello_world
+
+
 
 
 # @csrf_exempt
@@ -210,3 +214,8 @@ class SaleOrderView(APIView):
             return Response({'code': 404, 'message': '找不到对应记录'}, status=status.HTTP_404_NOT_FOUND)
         demo.delete()
         return Response({'code': 204, 'message': '删除成功'}, status=status.HTTP_204_NO_CONTENT)
+
+
+def celery_test(request):
+    hello_world.delay()
+    return HttpResponse('celery调度成功')

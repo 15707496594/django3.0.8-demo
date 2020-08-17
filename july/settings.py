@@ -146,3 +146,8 @@ REST_FRAMEWORK = {
         'sale_order': '60/m'
     }
 }
+
+# celery配置
+CELERY_TIMEZONE = 'Asia/Shanghai'
+CELERY_BROKER_URL = 'amqp://root:admin@127.0.0.1:5672'
+CELERY_RESULT_BACKEND = 'redis://:admin@127.0.0.1:6379/0'
