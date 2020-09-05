@@ -109,14 +109,10 @@ class UserAuth(APIView):
         :return:
         """
         response = {'code': 200, 'message': None}
-        username = request._request.POST.get('username')
-        password = request._request.POST.get('password')
+        username = request.data.get('username')
+        password = request.data.get('password')
         user = User.objects.filter(username=username).first()
-        if not user:
-            response['code'] = 403
-            response['message'] = '用户名或密码错误'
-            return Response(response, status=status.HTTP_403_FORBIDDEN)
-        if not user.check_password(password):
+        if not user or not user.check_password(password):
             response['code'] = 403
             response['message'] = '用户名或密码错误'
             return Response(response, status=status.HTTP_403_FORBIDDEN)

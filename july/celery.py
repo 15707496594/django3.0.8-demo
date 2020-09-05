@@ -4,6 +4,7 @@ from celery import Celery
 from datetime import timedelta
 
 QUEUES = {
+    # ‘方法名’                  ‘队列名’
     'demo.tasks.hello_world': 'demo_hello_world'
 }
 
